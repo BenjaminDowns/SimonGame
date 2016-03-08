@@ -39,7 +39,10 @@ body {
 
 #container {
   position: absolute;
-  margin: 5% 20%;
+  margin-left: -210px;
+  left: 50%;
+  top: 50%;
+  transform: translateY(-50%);
   min-width: 420px;
   min-height: 420px; }
 
@@ -49,16 +52,24 @@ body {
   background-color: #282828;
   z-index: 100;
   position: absolute;
-  top: 115px;
+  top: 120px;
   left: 125px;
   border-radius: 100%; }
 
 #start {
   position: relative;
-  left: 50px;
+  left: 39px;
   top: 50px;
   color: black; }
   #start:hover {
+    cursor: pointer; }
+
+#reset {
+  position: relative;
+  left: 59px;
+  top: 50px;
+  color: black; }
+  #reset:hover {
     cursor: pointer; }
 
 .toggle {

@@ -9,30 +9,58 @@
     let controls = document.getElementById('controls')
     let togglePower = document.getElementById('toggle-switch')
     let startButton = document.getElementById('start');
+    let resetButton = document.getElementById('reset');
 
     const SIMON = {
 
-        moves: [r, b, y],
+        moves: [],
         pieces: [r, g, b, y],
         counter: 1,
         powerOn: false,
 
         togglePower() {
             this.powerOn = !this.powerOn
+            SIMON.reset()
+            startButton.disabled = !startButton.disabled
+            resetButton.disabled = !resetButton.disabled
         },
-        addAMove() {
-            moves.push(pieces[Math.floor(Math.random() * 4)])
+        addAMove() {  
+            this.moves.push(this.pieces[Math.floor(Math.random() * 4)])
+            console.log(this.moves)
+        },
+        wait() {
+            console.log('waiting now');
         },
         simulate() {
+            SIMON.addAMove();
             for (let start = 0; start <= SIMON.moves.length - 1; start++) {
-                setInterval(() => {
-                    SIMON.moves[start].click()
-                }, start + 1 * 1000)
+                setTimeout(() => {
+                    SIMON.moves[start].click({ AI: true })
+                }, start * 1000)
             }
+        },
+        reset() {
+            SIMON.moves = []
         }
-
     }
 
+    const PLAYER = {
+        moves: [],
+        repeating: false
+    }
+
+    function makeMoves() {
+
+
+        // wait for player input
+        // check each move against the SIMON.moves array
+        // if move !== SIMON.moves[counter] then alert("sorry, you're an idiot")
+        // show score? (counter + 1)
+    }
+
+
+
+    resetButton.addEventListener('click', SIMON.reset)
     togglePower.addEventListener('click', SIMON.togglePower)
     start.addEventListener('click', SIMON.simulate);
     // trigger lightup event on click
@@ -40,32 +68,43 @@
     g.addEventListener('click', lightUp)
     y.addEventListener('click', lightUp)
     b.addEventListener('click', lightUp)
-
-
-    function lightUp(e, move) {
-        console.log(e)
-        console.log('and')
-        console.log(move)
-        if (e !== null) {
-            // console.log(e)
-            if (e.target === controls || e.target === togglePower) {
-                e.stopPropagation();
-                return null;
-            }
-
-            let clickedItem = e.target
-            let original = clickedItem.style.background
-            clickedItem.style.background = 'lightgray'
-            e.stopPropagation();
-            setTimeout(function() {
-                clickedItem.style.background = original
-            }, 100)
+    
+    let turn = 0
+    let index = 0
+    let counter = 1;
+    function lightUp(e) {
+        turn++
+        counter *= turn
+        console.log(index)
+        if (counter % 2 === 0) {
+            PLAYER.moves.push(e.target.id)
+            console.log(PLAYER.moves)
+            console.log(SIMON.moves)
+            
+            console.log(PLAYER.moves[index] === SIMON.moves[index]['id'])
         }
+        index++
+        // if (e !== null) {
+        //     if (e.target === controls || e.target === togglePower) {
+        //         e.stopPropagation();
+        //         return null;
+        //     }
 
-        if (move !== undefined) {
-            console.log('found a move')
-            lightUp(move)
-        }
-    } // end lightup function
+        let clickedItem = e.target
+        let original = clickedItem.style.background
+        clickedItem.style.background = 'lightgray'
+        e.stopPropagation();
+        setTimeout(function() {
+            clickedItem.style.background = original
+        }, 300)
+    }
+    // } // end lightup function
+
+    // setInterval(() => {
+    //     if (PLAYER.moves.length === SIMON.moves.length)
+    //         SIMON.simulate();
+    // }, 500)
+
+
 
 })
