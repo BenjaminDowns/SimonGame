@@ -8,7 +8,7 @@ body {
   height: 200px;
   width: 200px;
   display: inline-block;
-  border: gray solid 15px; }
+  border: gray solid 7px; }
   .pieces:hover {
     cursor: pointer; }
   .pieces:active {
@@ -35,7 +35,6 @@ body {
   border-bottom-right-radius: 100%; }
 
 .bottom {
-  /*margin-top: -20px;*/
   z-index: 2; }
 
 #container {
@@ -53,6 +52,14 @@ body {
   top: 115px;
   left: 125px;
   border-radius: 100%; }
+
+#start {
+  position: relative;
+  left: 50px;
+  top: 50px;
+  color: black; }
+  #start:hover {
+    cursor: pointer; }
 
 .toggle {
   display: block;
