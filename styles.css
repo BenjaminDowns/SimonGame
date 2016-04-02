@@ -174,10 +174,14 @@ body {
 #flashMessage {
   background-color: #2540AC;
   color: lightgray;
-  height: 4em;
-  width: 50%;
-  margin-left: 25%;
+  height: 25%;
+  width: 25%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 10px;
+  text-align: center;
   display: none;
   z-index: 1; }
 
