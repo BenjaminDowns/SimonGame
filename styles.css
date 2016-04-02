@@ -16,8 +16,7 @@ body {
   .control-btn:hover {
     cursor: pointer; }
   .control-btn:disabled {
-    background-color: #f44336;
-    color: grey; }
+    background-color: #f44336; }
     .control-btn:disabled:hover {
       cursor: none; }
 
