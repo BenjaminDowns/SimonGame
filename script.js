@@ -9,7 +9,7 @@
     let controls = document.getElementById('controls')
     let togglePower = document.getElementById('toggle-switch')
     let messageDiv = document.getElementById('flashMessage')
-    
+    let controlButtons = document.getElementsByClassName('control-btn')
     let startButton = document.getElementById('start');
     let resetButton = document.getElementById('reset');
     let tracker = 0;
@@ -24,6 +24,7 @@
             SIMON.reset()
             startButton.disabled = !startButton.disabled
             resetButton.disabled = !resetButton.disabled
+            
         },
         
         addAMove() { 
@@ -32,29 +33,27 @@
             this.moves.push(newPiece)
         },
         
-        wait() {
-            console.log('waiting now');
-        },
-        
         simulate() {
             SIMON.addAMove();
             for (let start = 0; start <= SIMON.moves.length - 1; start++) {
                 setTimeout(() => {
                     SIMON.isSIMONturn = true;
-                    SIMON.moves[start].click()
+                    // in case reset() is called during middle of SIMON's turn
+                    if (SIMON.moves[start]) {
+                        SIMON.moves[start].click()
+                    }
                 }, start * 1000)
-            }
-            console.log('hello')
-            SIMON.isSIMONturn = false;
-            console.log(SIMON.isSIMONturn)
+            }            
         },
         
         reset() {
-            SIMON.moves = []
+            SIMON.moves = []        
         },
         
-        flashMessage() {
-            messageDiv.innerText = 'SORRY!'
+        flashMessage(message) {
+            messageDiv.style.display = 'absolute'
+            messageDiv.innerText = message
+            
         }
     }
 
@@ -63,17 +62,6 @@
         repeating: false,
         correctInput: () => PLAYER.moves.every((x, i) => x === SIMON.moves[i].id)
     }
-
-    function makeMoves() {
-
-
-        // wait for player input
-        // check each move against the SIMON.moves array
-        // if move !== SIMON.moves[counter] then alert("incorrect entry")
-        // show score? (counter + 1)
-    }
-
-
 
     resetButton.addEventListener('click', SIMON.reset)
     togglePower.addEventListener('click', SIMON.togglePower)
@@ -94,7 +82,7 @@
             console.log('players turn!')
             PLAYER.moves.push(e.target.id)
             if (!PLAYER.correctInput()) {
-                flashMessage(`Sorry, but that was incorrect. Your final score was${SIMON.moves.length}`)
+                SIMON.flashMessage(`Sorry, but that was incorrect. Your final score was${SIMON.moves.length}`)
             }
         }
      
@@ -110,9 +98,11 @@
         e.stopPropagation();
         setTimeout(function() {
             clickedItem.style.background = original
-        }, 300)
+        }, 250)
         SIMON.isSIMONturn = false;
-        
+         if (PLAYER.moves.length === SIMON.moves.length) {
+            setTimeout(() => SIMON.simulate(), 1000);
+         }
     }
     // } // end lightup function
 

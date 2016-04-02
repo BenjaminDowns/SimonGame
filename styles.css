@@ -2,7 +2,37 @@ body {
   height: 100vh;
   width: 100vh;
   overflow-x: hidden;
-  overflow-y: hidden; }
+  overflow-y: hidden;
+  background: url(""); }
+
+.control-btn {
+  background-color: #15BF3B;
+  color: white;
+  height: 25px;
+  width: 50px;
+  border-radius: 4px;
+  text-align: center;
+  outline: none; }
+  .control-btn:hover {
+    cursor: pointer; }
+  .control-btn:disabled {
+    background-color: #f44336;
+    color: grey; }
+    .control-btn:disabled:hover {
+      cursor: none; }
+
+#start {
+  position: relative;
+  left: 35px;
+  top: 50px; }
+
+#reset {
+  position: relative;
+  left: 45px;
+  top: 50px;
+  background-color: #FDB91C; }
+  #reset:disabled {
+    background-color: #f44336; }
 
 .pieces {
   height: 200px;
@@ -44,7 +74,9 @@ body {
   top: 50%;
   transform: translateY(-50%);
   min-width: 420px;
-  min-height: 420px; }
+  min-height: 420px;
+  background-color: darkgrey;
+  border-radius: 100%; }
 
 #controls {
   height: 180px;
@@ -55,22 +87,6 @@ body {
   top: 120px;
   left: 125px;
   border-radius: 100%; }
-
-#start {
-  position: relative;
-  left: 39px;
-  top: 50px;
-  color: black; }
-  #start:hover {
-    cursor: pointer; }
-
-#reset {
-  position: relative;
-  left: 59px;
-  top: 50px;
-  color: black; }
-  #reset:hover {
-    cursor: pointer; }
 
 .toggle {
   display: block;
@@ -155,5 +171,15 @@ body {
     left: 20%; }
   .toggle-switch .toggle-checkbox:checked + .toggle-btn .toggle-feature:after {
     right: -60%; }
+
+#flashMessage {
+  background-color: #2540AC;
+  color: lightgray;
+  height: 4em;
+  width: 50%;
+  margin-left: 25%;
+  border-radius: 10px;
+  display: none;
+  z-index: 1; }
 
 /*# sourceMappingURL=styles.css.map */
