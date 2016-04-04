@@ -24,7 +24,6 @@
             SIMON.reset()
             startButton.disabled = !startButton.disabled
             resetButton.disabled = !resetButton.disabled
-
         },
 
         addAMove() {
@@ -33,12 +32,14 @@
             this.moves.push(newPiece)
         },
 
+        endGame: false,
+
         simulate() {
             SIMON.addAMove();
             for (let start = 0; start <= SIMON.moves.length - 1; start++) {
                 setTimeout(() => {
                     SIMON.isSIMONturn = true;
-                    // in case reset() is called during middle of SIMON's turn
+                    // checks to makes sure that reset() was not called during middle of SIMON's turn before clicking
                     if (SIMON.moves[start]) {
                         SIMON.moves[start].click()
                     }
@@ -51,34 +52,65 @@
             PLAYER.moves = []
         },
 
-        flashMessage: (message) => {
-            flashMessageDiv.innerHTML = `<h2>${message}<h2>`
-            fadeIn(flashMessageDiv)
-            setTimeout(() => {
-                fadeOut(flashMessageDiv)
-                fadeIn(container)
+        flashMessage: (messages) => {
+            let [message1, message2] = [messages[0], messages[1]]
+
+            // flashes the first message every .75 seconds, for 3 seconds
+            let flashing = setInterval(() => {
+                flashMessageDiv.style.color = 'limegreen';
+                flashMessageDiv.innerText = `${message1}`
+                setTimeout(() => flashMessageDiv.innerText = '', 500)
+
+            }, 750);
+            // stops the first message after 1.5 seconds
+            setTimeout(() => clearInterval(flashing), 1500)
+
+            if (message2 !== undefined) {
+                // wait 1.5 seconds, then flash the second message
+                setTimeout(() => {
+
+                    setTimeout(() => clearInterval(flashing2), 3000)
+                    let flashing2 = setInterval(() => {
+
+                        flashMessageDiv.innerText = `${message2}`
+                        setTimeout(() => flashMessageDiv.innerText = '', 500)
+
+                    }, 750);
+                }, 1500);
             }
-                , 3000);
+            setTimeout(() => {
+                flashMessageDiv.style.color = 'rgba(0,0,0,0.58)'
+                flashMessageDiv.innerText = '888888888'
+            }, 4500);
         }
     }
 
     const PLAYER = {
         moves: [],
-        
+
         repeating: false,
-        
+
         correctInput: () => PLAYER.moves.every((x, i) => x === SIMON.moves[i].id),
-        
-        loses: (message) =>  {
-            SIMON.flashMessage(`Sorry, but that was incorrect. Your final score was ${SIMON.moves.length}`)
-            fadeOut(container)
+
+        loses: (message) => {
+            SIMON.flashMessage([`INCORRECT`, `SCORE: ${SIMON.moves.length}`])
+            SIMON.endGame = true;
             return SIMON.reset();
+        },
+
+        wins: (message) => {
+            SIMON.flashMessage(['YOU WIN!', 'SCORE: 20'])
         }
     }
 
     resetButton.addEventListener('click', SIMON.reset)
     togglePower.addEventListener('click', SIMON.togglePower)
-    start.addEventListener('click', SIMON.simulate);
+    start.addEventListener('click', () => {
+        SIMON.endGame = false;
+        SIMON.flashMessage(['BEGIN!'])
+        setTimeout(() => SIMON.simulate(), 3000)
+
+    });
 
     // trigger lightup event on click
     r.addEventListener('click', lightUp)
@@ -90,29 +122,25 @@
 
         if (!SIMON.isSIMONturn) {
             PLAYER.moves.push(e.target.id)
-            
+
             if (!PLAYER.correctInput()) {
                 PLAYER.loses();
-               
             }
         }
-
-        // PLAYER.moves.push(e.target.id)
-        // console.log(PLAYER.moves)
-        // console.log(SIMON.moves)
-
-        // console.log(PLAYER.moves[index] === SIMON.moves[index]['id'])
 
         let clickedItem = e.target
         let original = clickedItem.style.background
         clickedItem.style.background = 'lightgray'
         e.stopPropagation();
+
         setTimeout(function() {
             clickedItem.style.background = original
         }, 250)
+
         SIMON.isSIMONturn = false;
-        if (PLAYER.moves.length === SIMON.moves.length) {
-            setTimeout(() => SIMON.simulate(), 1000);
+
+        if (PLAYER.moves.length === SIMON.moves.length && !SIMON.endGame) {
+            setTimeout(() => SIMON.simulate(), 1500);
         }
     }
     // } // end lightup function
@@ -125,7 +153,7 @@
 
     //// FADE FUNCTIONS BASED ON CHRIS BUTTERY'S SOLUTION //// 
     //// http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/ ////
-       
+
     function fadeOut(e) {
         e.style.opacity = 1;
 
@@ -147,7 +175,7 @@
             if (!((val += .1) > 1)) {
                 e.style.opacity = val;
                 requestAnimationFrame(fade);
-                
+
             }
         })();
     }
