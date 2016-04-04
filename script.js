@@ -12,7 +12,7 @@
     let controlButtons = document.getElementsByClassName('control-btn')
     let startButton = document.getElementById('start');
     let resetButton = document.getElementById('reset');
-    let tracker = 0;
+    let overlayDiv = document.getElementById('overlay');
 
     const SIMON = {
 
