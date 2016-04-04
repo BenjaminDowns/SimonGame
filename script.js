@@ -57,7 +57,7 @@
 
             // flashes the first message every .75 seconds, for 3 seconds
             let flashing = setInterval(() => {
-                flashMessageDiv.style.color = 'limegreen';
+                flashMessage.style.color = /INCORRECT/.test(message1) ? '#f44336' : '#15BF3B'
                 flashMessageDiv.innerText = `${message1}`
                 setTimeout(() => flashMessageDiv.innerText = '', 500)
 
@@ -68,20 +68,18 @@
             if (message2 !== undefined) {
                 // wait 1.5 seconds, then flash the second message
                 setTimeout(() => {
-
-                    setTimeout(() => clearInterval(flashing2), 3000)
+                    
+                    
                     let flashing2 = setInterval(() => {
-
+                        flashMessage.style.color = '#15BF3B'
                         flashMessageDiv.innerText = `${message2}`
                         setTimeout(() => flashMessageDiv.innerText = '', 500)
-
+                        
                     }, 750);
+                    setTimeout(() => clearInterval(flashing2), 3000)
                 }, 1500);
+                
             }
-            setTimeout(() => {
-                flashMessageDiv.style.color = 'rgba(0,0,0,0.58)'
-                flashMessageDiv.innerText = '888888888'
-            }, 4500);
         }
     }
 
@@ -119,6 +117,22 @@
     b.addEventListener('click', lightUp)
 
     function lightUp(e) {
+        
+        let clickedItem = e.target
+
+        let computeLightUpColor = () => {
+
+            let rColor = originalRGB[0].replace('rgb(', '')
+            let gColor = originalRGB[1].replace(' ', '')
+            let bColor = originalRGB[2].replace(')', '')
+            
+            rColor = +rColor + 50 > 255 ? 255 : +rColor + 50
+            gColor = +gColor + 50 > 255 ? 255 : +gColor + 50
+            bColor = +bColor + 50 > 255 ? 255 : +bColor + 50
+            let newRGB = `rgb(${rColor}, ${gColor}, ${bColor})`
+            return newRGB
+
+        }
 
         if (!SIMON.isSIMONturn) {
             PLAYER.moves.push(e.target.id)
@@ -127,14 +141,16 @@
                 PLAYER.loses();
             }
         }
+        
+        let originalRGB = window.getComputedStyle(clickedItem, null).getPropertyValue("background-color").split(',')
+        clickedItem.style.background = computeLightUpColor(originalRGB)
 
-        let clickedItem = e.target
-        let original = clickedItem.style.background
-        clickedItem.style.background = 'lightgray'
-        e.stopPropagation();
+        // trying to get radial gradient
+        // let newColor = `-webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, ${originalRGB}`.replace('b(', 'ba(').replace(')', ', 0.05)))')
+        // e.stopPropagation();
 
         setTimeout(function() {
-            clickedItem.style.background = original
+            clickedItem.style.background = originalRGB
         }, 250)
 
         SIMON.isSIMONturn = false;
@@ -144,43 +160,4 @@
         }
     }
     // } // end lightup function
-
-    // setInterval(() => {
-    //     if (tracker == SIMON.moves.length && tracker > 0)
-    //         console.log("PLAYER'S TURN")
-    // }, 500)
-    // fade out
-
-    //// FADE FUNCTIONS BASED ON CHRIS BUTTERY'S SOLUTION //// 
-    //// http://www.chrisbuttery.com/articles/fade-in-fade-out-with-javascript/ ////
-
-    function fadeOut(e) {
-        e.style.opacity = 1;
-
-        (function fade() {
-            if ((e.style.opacity -= .1) < 0) {
-                e.style.display = "none";
-            } else {
-                requestAnimationFrame(fade);
-            }
-        })();
-    }
-
-    function fadeIn(e) {
-        e.style.opacity = 0;
-        e.style.display = "block";
-
-        (function fade() {
-            var val = parseFloat(e.style.opacity);
-            if (!((val += .1) > 1)) {
-                e.style.opacity = val;
-                requestAnimationFrame(fade);
-
-            }
-        })();
-    }
-
-
-
-
 })
