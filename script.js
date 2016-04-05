@@ -1,18 +1,23 @@
 (document).addEventListener('DOMContentLoaded', function() {
     'use strict'
-
-    let r = document.getElementById('r')
-    let g = document.getElementById('g')
-    let y = document.getElementById('y')
-    let b = document.getElementById('b')
-    let container = document.getElementById('container');
-    let controls = document.getElementById('controls')
-    let togglePower = document.getElementById('toggle-switch')
-    let flashMessageDiv = document.getElementById('flashMessage')
-    let controlButtons = document.getElementsByClassName('control-btn')
-    let startButton = document.getElementById('start');
-    let resetButton = document.getElementById('reset');
-    let overlayDiv = document.getElementById('overlay');
+    
+    const r = document.getElementById('r')
+    const g = document.getElementById('g')
+    const y = document.getElementById('y')
+    const b = document.getElementById('b')
+    const rSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3') 
+    const gSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3')
+    const ySound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3') 
+    const bSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3')
+    
+    const container = document.getElementById('container');
+    const controls = document.getElementById('controls')
+    const togglePower = document.getElementById('toggle-switch')
+    const flashMessageDiv = document.getElementById('flashMessage')
+    const controlButtons = document.getElementsByClassName('control-btn')
+    const startButton = document.getElementById('start');
+    const resetButton = document.getElementById('reset');
+    const overlayDiv = document.getElementById('overlay');
 
     const SIMON = {
 
@@ -36,6 +41,7 @@
 
         simulate() {
             SIMON.addAMove();
+            flashMessageDiv.innerText = `STEPS: ${SIMON.moves.length}`
             for (let start = 0; start <= SIMON.moves.length - 1; start++) {
                 setTimeout(() => {
                     SIMON.isSIMONturn = true;
@@ -144,6 +150,8 @@
         
         let originalRGB = window.getComputedStyle(clickedItem, null).getPropertyValue("background-color").split(',')
         clickedItem.style.background = computeLightUpColor(originalRGB)
+        let sound = eval(`${e.target.id}Sound`)
+        sound.play()
 
         // trying to get radial gradient
         // let newColor = `-webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, ${originalRGB}`.replace('b(', 'ba(').replace(')', ', 0.05)))')
