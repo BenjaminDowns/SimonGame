@@ -35,20 +35,26 @@ body {
     .control-btn:disabled:hover {
       cursor: none; }
 
+.strict-on {
+  background-color: #15BF3B; }
+
+.strict-off {
+  background-color: #f44336; }
+
 #strict {
   position: relative;
-  left: 40px;
-  top: 25px; }
+  left: 65px;
+  top: 15px; }
 
 #start {
   position: relative;
-  left: 35px;
-  top: 45px; }
+  left: -20px;
+  top: 50px; }
 
 #reset {
   position: relative;
-  left: 45px;
-  top: 45px;
+  left: -5px;
+  top: 50px;
   background-color: #FDB91C; }
   #reset:disabled {
     background-color: #f44336; }

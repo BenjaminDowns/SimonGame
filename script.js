@@ -42,6 +42,12 @@
       startButton.disabled = !startButton.disabled
       resetButton.disabled = !resetButton.disabled
       strictButton.disabled = !strictButton.disabled
+      SIMON.endGame = false;
+    },
+    
+    toggleStrict() {
+      SIMON.strict = !SIMON.strict;
+      strictButton.className = strictButton.className.indexOf('-on') > -1 ? 'control-btn strict-off' : 'control-btn strict-on'  
     },
 
     addAMove() {
@@ -82,8 +88,9 @@
 
     flashMessage: (messages) => {
       let [message1, message2] = [messages[0], messages[1]]
-
-      // flashes the first message every .75 seconds, for 3 seconds
+      let messageInterval = 1500
+      // flashes the first message every .75 seconds, for 1.5 seconds
+     
       let flashing = setInterval(() => {
         flashMessage.style.color = /INCORRECT/.test(message1) ? '#f44336' : '#15BF3B'
         flashMessageDiv.innerText = message1
@@ -91,10 +98,26 @@
 
       }, 750);
       // stops the first message after 1.5 seconds
-      setTimeout(() => clearInterval(flashing), 1500)
+      setTimeout(() => clearInterval(flashing), messageInterval)
+      
+      // if end of game (which is determined by strict mode; flash 'game over')
+      if (SIMON.endGame) {
+          setTimeout(() => {
+
+          let flashGameOver = setInterval(() => {
+          
+            flashMessage.style.color = '#f44336'
+            flashMessageDiv.innerText = 'GAME OVER'
+            setTimeout(() => flashMessageDiv.innerText = '', 500)
+          }, 750);
+          setTimeout(() => clearInterval(flashGameOver), messageInterval)
+        }, messageInterval);
+      
+    }
 
       if (message2 !== undefined) {
-        // wait 1.5 seconds, then flash the second message
+        // wait either 1.5 or 3 seconds, then flash the second message
+        messageInterval *= SIMON.endGame ? 2 : 1
         setTimeout(() => {
 
           let flashing2 = setInterval(() => {
@@ -103,8 +126,8 @@
             setTimeout(() => flashMessageDiv.innerText = '', 500)
 
           }, 750);
-          setTimeout(() => clearInterval(flashing2), 3000)
-        }, 1500);
+          setTimeout(() => clearInterval(flashing2), messageInterval)
+        }, messageInterval);
 
       }
     }
@@ -124,8 +147,8 @@
       bSound.play()
 
       if (SIMON.strict) {
-        SIMON.flashMessage([`INCORRECT`, 'SCORE: ' + SIMON.moves.length])
         SIMON.endGame = true
+        SIMON.flashMessage([`INCORRECT`, 'SCORE: ' + SIMON.moves.length])
         SIMON.moves = []
         PLAYER.moves = []
       } else {
@@ -144,7 +167,8 @@
   function lightUp(e) {
       
     let clickedItem = e.target
-
+    
+    // helper function to lighten the clicked item's color
     let computeLightUpColor = () => {
 
       let rColor = originalRGB[0].replace('rgb(', '')
@@ -156,7 +180,6 @@
       bColor = +bColor + 50 > 255 ? 255 : +bColor + 50
       let newRGB = `rgb(${rColor}, ${gColor}, ${bColor})`
       return newRGB
-
     }
 
     if (!SIMON.isSIMONturn) {
@@ -171,12 +194,8 @@
 
     let originalRGB = window.getComputedStyle(clickedItem, null).getPropertyValue("background-color").split(',')
     clickedItem.style.background = computeLightUpColor(originalRGB)
-    let sound = eval(`${e.target.id}Sound`)
-    sound.play()
-
-    // trying to get radial gradient
-    // let newColor = `-webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, ${originalRGB}`.replace('b(', 'ba(').replace(')', ', 0.05)))')
-    // e.stopPropagation();
+    let currentSound = eval(`${e.target.id}Sound`)
+    currentSound.play()
 
     setTimeout(function() {
       clickedItem.style.background = originalRGB
@@ -198,5 +217,6 @@
     setTimeout(() => SIMON.simulate(), 3000)
   });
   togglePower.addEventListener('click', SIMON.togglePower)
+  strictButton.addEventListener('click', SIMON.toggleStrict)
 
 })
