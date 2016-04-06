@@ -16,9 +16,10 @@ body {
 
 .control-btn {
   background-color: #15BF3B;
-  color: white;
+  color: #f2f2f2;
   height: 25px;
   width: 50px;
+  text-shadow: 0 1px 2px #666;
   border-radius: 4px;
   text-align: center;
   outline: none;
@@ -29,9 +30,15 @@ body {
     cursor: pointer; }
   .control-btn:disabled {
     background-color: #f44336;
-    color: gray; }
+    color: #333333;
+    text-shadow: 0px 0px black; }
     .control-btn:disabled:hover {
       cursor: none; }
+
+#strict {
+  position: relative;
+  left: 40px;
+  top: 25px; }
 
 #start {
   position: relative;
@@ -55,7 +62,7 @@ body {
   border-radius: 5px;
   color: rgba(0, 0, 0, 0.58);
   z-index: 1;
-  background-color: gray;
+  background-color: #333333;
   text-align: center;
   line-height: 28px;
   font-family: 'Orbitron', 'sans-serif';
@@ -91,9 +98,6 @@ body {
   background-color: #15BF3B;
   border-bottom-right-radius: 100%; }
 
-.bottom {
-  z-index: 2; }
-
 #container {
   position: absolute;
   margin-left: -210px;
@@ -126,7 +130,7 @@ body {
 .toggle-btn {
   display: block;
   margin: 0 auto;
-  font-size: .6em;
+  font-size: .7em;
   transition: all 350ms ease-in; }
   .toggle-btn:hover {
     cursor: pointer; }
@@ -154,6 +158,7 @@ body {
   font-family: 'PT Sans', Sans Serif;
   text-transform: uppercase;
   color: #fff;
+  line-height: 25px;
   background: linear-gradient(90deg, #15BF3B 0%, #15BF3B 50%, #f44336 50%, #f44336 200%);
   background-position: -33px 0;
   background-size: 200% 100%;

@@ -1,171 +1,202 @@
+// Vanilla JS (no jQuery)
+
 (document).addEventListener('DOMContentLoaded', function() {
-    'use strict'
+  'use strict'
+
+  // SOUNDS 
+  const rSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3')
+  const gSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3')
+  const ySound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3')
+  const bSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3')
+
+  // DOM ELEMENTS
+  const r = document.getElementById('r')
+  const g = document.getElementById('g')
+  const y = document.getElementById('y')
+  const b = document.getElementById('b')
+  const container = document.getElementById('container');
+  const controls = document.getElementById('controls')
+  const togglePower = document.getElementById('toggle-switch')
+  const flashMessageDiv = document.getElementById('flashMessage')
+  const controlButtons = document.getElementsByClassName('control-btn')
+  const startButton = document.getElementById('start');
+  const resetButton = document.getElementById('reset');
+  const strictButton = document.getElementById('strict');
+  const overlayDiv = document.getElementById('overlay');
+
+  // trigger lightup event on click;
+  r.addEventListener('click', lightUp)
+  g.addEventListener('click', lightUp)
+  y.addEventListener('click', lightUp)
+  b.addEventListener('click', lightUp)
+
+  const SIMON = {
+
+    moves: [],
+    pieces: [r, g, b, y],
+    isSIMONturn: false,
+
+    togglePower() {
+      SIMON.moves = []
+      PLAYER.moves = []
+      startButton.disabled = !startButton.disabled
+      resetButton.disabled = !resetButton.disabled
+      strictButton.disabled = !strictButton.disabled
+    },
+
+    addAMove() {
+      let newPiece = this.pieces[Math.floor(Math.random() * 4)]
+      this.moves.push(newPiece)
+    },
+
+    endGame: false,
     
-    const r = document.getElementById('r')
-    const g = document.getElementById('g')
-    const y = document.getElementById('y')
-    const b = document.getElementById('b')
-    const rSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3') 
-    const gSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3')
-    const ySound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3') 
-    const bSound = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3')
+    repeating: false,
+
+    strict: false,
     
-    const container = document.getElementById('container');
-    const controls = document.getElementById('controls')
-    const togglePower = document.getElementById('toggle-switch')
-    const flashMessageDiv = document.getElementById('flashMessage')
-    const controlButtons = document.getElementsByClassName('control-btn')
-    const startButton = document.getElementById('start');
-    const resetButton = document.getElementById('reset');
-    const overlayDiv = document.getElementById('overlay');
+    simulate() {
+      if (!SIMON.repeating) {
+        this.addAMove();
+      }
+      PLAYER.moves = []
+      SIMON.repeating = false
+      flashMessageDiv.innerText = `STEPS: ${this.moves.length}`
+      for (let start = 0; start <= SIMON.moves.length - 1; start++) {
+        setTimeout(() => {
+          this.isSIMONturn = true;
+          // checks to makes sure that reset() was not called during middle of SIMON's turn
+          if (this.moves[start]) {
+            this.moves[start].click()
+          }
+        }, start * 1000)
+      }
+    },
 
-    const SIMON = {
+    reset: () => {
+      let finalScore = PLAYER.moves.length
+      SIMON.moves = []
+      PLAYER.moves = []
+      SIMON.flashMessage(['RESET', `SCORE: ${finalScore}`])
+    },
 
-        moves: [],
-        pieces: [r, g, b, y],
-        isSIMONturn: false,
+    flashMessage: (messages) => {
+      let [message1, message2] = [messages[0], messages[1]]
 
-        togglePower() {
-            SIMON.reset()
-            startButton.disabled = !startButton.disabled
-            resetButton.disabled = !resetButton.disabled
-        },
+      // flashes the first message every .75 seconds, for 3 seconds
+      let flashing = setInterval(() => {
+        flashMessage.style.color = /INCORRECT/.test(message1) ? '#f44336' : '#15BF3B'
+        flashMessageDiv.innerText = message1
+        setTimeout(() => flashMessageDiv.innerText = '', 500)
 
-        addAMove() {
-            PLAYER.moves = []
-            let newPiece = this.pieces[Math.floor(Math.random() * 4)]
-            this.moves.push(newPiece)
-        },
+      }, 750);
+      // stops the first message after 1.5 seconds
+      setTimeout(() => clearInterval(flashing), 1500)
 
-        endGame: false,
+      if (message2 !== undefined) {
+        // wait 1.5 seconds, then flash the second message
+        setTimeout(() => {
 
-        simulate() {
-            SIMON.addAMove();
-            flashMessageDiv.innerText = `STEPS: ${SIMON.moves.length}`
-            for (let start = 0; start <= SIMON.moves.length - 1; start++) {
-                setTimeout(() => {
-                    SIMON.isSIMONturn = true;
-                    // checks to makes sure that reset() was not called during middle of SIMON's turn before clicking
-                    if (SIMON.moves[start]) {
-                        SIMON.moves[start].click()
-                    }
-                }, start * 1000)
-            }
-        },
+          let flashing2 = setInterval(() => {
+            flashMessage.style.color = '#15BF3B'
+            flashMessageDiv.innerText = message2
+            setTimeout(() => flashMessageDiv.innerText = '', 500)
 
-        reset: () => {
-            SIMON.moves = []
-            PLAYER.moves = []
-        },
+          }, 750);
+          setTimeout(() => clearInterval(flashing2), 3000)
+        }, 1500);
 
-        flashMessage: (messages) => {
-            let [message1, message2] = [messages[0], messages[1]]
+      }
+    }
+  }
 
-            // flashes the first message every .75 seconds, for 3 seconds
-            let flashing = setInterval(() => {
-                flashMessage.style.color = /INCORRECT/.test(message1) ? '#f44336' : '#15BF3B'
-                flashMessageDiv.innerText = `${message1}`
-                setTimeout(() => flashMessageDiv.innerText = '', 500)
+  const PLAYER = {
+    moves: [],
 
-            }, 750);
-            // stops the first message after 1.5 seconds
-            setTimeout(() => clearInterval(flashing), 1500)
+    correctInput: () => PLAYER.moves.every((x, i) => x === SIMON.moves[i].id),
 
-            if (message2 !== undefined) {
-                // wait 1.5 seconds, then flash the second message
-                setTimeout(() => {
-                    
-                    
-                    let flashing2 = setInterval(() => {
-                        flashMessage.style.color = '#15BF3B'
-                        flashMessageDiv.innerText = `${message2}`
-                        setTimeout(() => flashMessageDiv.innerText = '', 500)
-                        
-                    }, 750);
-                    setTimeout(() => clearInterval(flashing2), 3000)
-                }, 1500);
-                
-            }
-        }
+    loses: (message) => {    
+
+      // all four sounds at once to indicate error
+      rSound.play()
+      bSound.play()
+      gSound.play()
+      bSound.play()
+
+      if (SIMON.strict) {
+        SIMON.flashMessage([`INCORRECT`, 'SCORE: ' + SIMON.moves.length])
+        SIMON.endGame = true
+        SIMON.moves = []
+        PLAYER.moves = []
+      } else {
+        SIMON.repeating = true
+        SIMON.flashMessage(['INCORRECT', 'TRY AGAIN'])
+        setTimeout(() => SIMON.simulate(), 5500)
+      }
+
+    },
+
+    wins: (message) => {
+      SIMON.flashMessage(['YOU WIN!', 'SCORE: 20'])
+    }
+  }
+
+  function lightUp(e) {
+      
+    let clickedItem = e.target
+
+    let computeLightUpColor = () => {
+
+      let rColor = originalRGB[0].replace('rgb(', '')
+      let gColor = originalRGB[1].replace(' ', '')
+      let bColor = originalRGB[2].replace(')', '')
+
+      rColor = +rColor + 50 > 255 ? 255 : +rColor + 50
+      gColor = +gColor + 50 > 255 ? 255 : +gColor + 50
+      bColor = +bColor + 50 > 255 ? 255 : +bColor + 50
+      let newRGB = `rgb(${rColor}, ${gColor}, ${bColor})`
+      return newRGB
+
     }
 
-    const PLAYER = {
-        moves: [],
+    if (!SIMON.isSIMONturn) {
+      PLAYER.moves.push(e.target.id)
 
-        repeating: false,
-
-        correctInput: () => PLAYER.moves.every((x, i) => x === SIMON.moves[i].id),
-
-        loses: (message) => {
-            SIMON.flashMessage([`INCORRECT`, `SCORE: ${SIMON.moves.length}`])
-            SIMON.endGame = true;
-            return SIMON.reset();
-        },
-
-        wins: (message) => {
-            SIMON.flashMessage(['YOU WIN!', 'SCORE: 20'])
-        }
-    }
-
-    resetButton.addEventListener('click', SIMON.reset)
-    togglePower.addEventListener('click', SIMON.togglePower)
-    start.addEventListener('click', () => {
-        SIMON.endGame = false;
-        SIMON.flashMessage(['BEGIN!'])
-        setTimeout(() => SIMON.simulate(), 3000)
-
-    });
-
-    // trigger lightup event on click
-    r.addEventListener('click', lightUp)
-    g.addEventListener('click', lightUp)
-    y.addEventListener('click', lightUp)
-    b.addEventListener('click', lightUp)
-
-    function lightUp(e) {
+      if (!PLAYER.correctInput()) {
+        PLAYER.moves = []
+        PLAYER.loses();
         
-        let clickedItem = e.target
-
-        let computeLightUpColor = () => {
-
-            let rColor = originalRGB[0].replace('rgb(', '')
-            let gColor = originalRGB[1].replace(' ', '')
-            let bColor = originalRGB[2].replace(')', '')
-            
-            rColor = +rColor + 50 > 255 ? 255 : +rColor + 50
-            gColor = +gColor + 50 > 255 ? 255 : +gColor + 50
-            bColor = +bColor + 50 > 255 ? 255 : +bColor + 50
-            let newRGB = `rgb(${rColor}, ${gColor}, ${bColor})`
-            return newRGB
-
-        }
-
-        if (!SIMON.isSIMONturn) {
-            PLAYER.moves.push(e.target.id)
-
-            if (!PLAYER.correctInput()) {
-                PLAYER.loses();
-            }
-        }
-        
-        let originalRGB = window.getComputedStyle(clickedItem, null).getPropertyValue("background-color").split(',')
-        clickedItem.style.background = computeLightUpColor(originalRGB)
-        let sound = eval(`${e.target.id}Sound`)
-        sound.play()
-
-        // trying to get radial gradient
-        // let newColor = `-webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, ${originalRGB}`.replace('b(', 'ba(').replace(')', ', 0.05)))')
-        // e.stopPropagation();
-
-        setTimeout(function() {
-            clickedItem.style.background = originalRGB
-        }, 250)
-
-        SIMON.isSIMONturn = false;
-
-        if (PLAYER.moves.length === SIMON.moves.length && !SIMON.endGame) {
-            setTimeout(() => SIMON.simulate(), 1500);
-        }
+      }
     }
-    // } // end lightup function
+
+    let originalRGB = window.getComputedStyle(clickedItem, null).getPropertyValue("background-color").split(',')
+    clickedItem.style.background = computeLightUpColor(originalRGB)
+    let sound = eval(`${e.target.id}Sound`)
+    sound.play()
+
+    // trying to get radial gradient
+    // let newColor = `-webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, ${originalRGB}`.replace('b(', 'ba(').replace(')', ', 0.05)))')
+    // e.stopPropagation();
+
+    setTimeout(function() {
+      clickedItem.style.background = originalRGB
+    }, 250)
+
+    SIMON.isSIMONturn = false;
+
+    if (PLAYER.moves.length === SIMON.moves.length && !SIMON.endGame) {
+      setTimeout(() => SIMON.simulate(), 1500);
+    }
+  }
+  // end lightup function
+
+  // EVENT LISTENERS FOR THE BUTTONS
+  resetButton.addEventListener('click', SIMON.reset)
+  start.addEventListener('click', () => {
+    SIMON.endGame = false;
+    SIMON.flashMessage(['BEGIN!'])
+    setTimeout(() => SIMON.simulate(), 3000)
+  });
+  togglePower.addEventListener('click', SIMON.togglePower)
+
 })
