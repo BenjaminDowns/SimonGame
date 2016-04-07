@@ -68,9 +68,12 @@
         strict: false,
 
         simulate() {
-            if (!SIMON.repeating) {
-                this.addAMove();
+            !SIMON.repeating ? this.addAMove() : null 
+            
+            if (SIMON.isOff) {
+                return null
             }
+            
             PLAYER.moves = []
             SIMON.repeating = false
             flashMessageDiv.innerText = `STEPS: ${this.moves.length}`
