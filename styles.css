@@ -209,4 +209,8 @@ body {
   .toggle-switch .toggle-checkbox:checked + .toggle-btn .toggle-feature:after {
     right: -60%; }
 
+@media screen and (max-width: 600px) {
+  body {
+    background-color: red; } }
+
 /*# sourceMappingURL=styles.css.map */
