@@ -168,6 +168,7 @@
 
         wins: (message) => {
             SIMON.flashMessage(['YOU WIN!', 'SCORE: 20'])
+            setTimeout(() => SIMON.reset(), 6000)
         }
     }
 
